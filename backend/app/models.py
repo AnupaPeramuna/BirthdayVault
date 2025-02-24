@@ -1,9 +1,9 @@
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from .app import db
+from .extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from datetime import datetime
 
 class User(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -31,4 +31,17 @@ class User(db.Model):
 
     def delete(self):
         db.session.delete(self)
+        db.session.commit()
+
+
+class TokenBlocklist(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    jti: so.Mapped[str] = so.mapped_column(sa.String(36), nullable=False)
+    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=False, default=datetime.datetime.now(datetime.timezone.utc))
+
+    def __repr__(self):
+        return f"<Token {self.jti}>"
+    
+    def save(self):
+        db.session.add(self)
         db.session.commit()
