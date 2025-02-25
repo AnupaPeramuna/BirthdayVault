@@ -3,14 +3,19 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from .models import User, TokenBlocklist
+from .models import User, TokenBlockList
 from .extensions import db
+
+import logging
+
 
 jwt = JWTManager()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    logging.basicConfig(level=logging.ERROR)
+
 
 
     #initialize 
@@ -21,9 +26,12 @@ def create_app(config_class=Config):
     migrate = Migrate(app, db) 
 
     from .auth import auth_bp
+    from .error_handler import error_bp
 
     #register blueprints
+    app.register_blueprint(error_bp)
     app.register_blueprint(auth_bp)
+
 
 
     #load user
@@ -55,7 +63,7 @@ def create_app(config_class=Config):
     @jwt.token_in_blocklist_loader
     def token_in_blocklist_callback(jwt_header, jwt_data):
         jti = jwt_data["jti"]
-        token = TokenBlocklist.query.filter_by(jti=jti).first()
+        token = TokenBlockList.query.filter_by(jti=jti).first()
         return token is not None
 
     return app
