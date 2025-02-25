@@ -83,8 +83,8 @@ def logout_user():
         jti = jwt['jti']
         token_type = jwt['type']
 
-        token_b = TokenBlockList(jti=jti)
-        token_b.save()
+        blocked_token = TokenBlockList(jti=jti)
+        blocked_token.save()
 
         return jsonify({"message": f"{token_type} token revoked successfully"}), 200
   
