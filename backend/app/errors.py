@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 import logging
 
-error_bp = Blueprint('errors', __name__)
+error_bp = Blueprint('errors', __name__, url_prefix='/errors')
 
 @error_bp.app_errorhandler(404)
 def not_found(error):

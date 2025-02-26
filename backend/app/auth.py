@@ -14,21 +14,21 @@ def register_users():
 
         username = data.get('username')
         password = data.get('password')
-        user = User.get_user_by_username(username)
+        user = User.get_user_by_username(username=username)
 
         if user is not None:
             return jsonify({"error": "User already exists"}, 409)
 
         password_errors = validate_password(password)
-        
+
         if password_errors:
             return jsonify({"error": password_errors}), 400
         
-        new_user = User(username)
-        new_user.set_password(password)
+        new_user = User(username=username)
+        new_user.set_password(password=password)
         new_user.save()
 
-        return jsonify({"message": "User created"}, 201)
+        return jsonify({"message": "User created"}), 201
     
     except Exception as e:
         logging.error(f"Error registering user: {e}")

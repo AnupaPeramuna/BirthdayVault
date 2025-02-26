@@ -26,7 +26,7 @@ def create_app(config_class=Config):
     migrate = Migrate(app, db) 
 
     from .auth import auth_bp
-    from .error_handler import error_bp
+    from .errors import error_bp
 
     #register blueprints
     app.register_blueprint(error_bp)
