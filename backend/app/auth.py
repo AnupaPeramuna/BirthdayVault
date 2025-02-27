@@ -14,10 +14,14 @@ def register_users():
 
         username = data.get('username')
         password = data.get('password')
+
+        if not username:
+            return jsonify({"error": "Please enter a username"}), 400
+        
         user = User.get_user_by_username(username=username)
 
         if user is not None:
-            return jsonify({"error": "User already exists"}, 409)
+            return jsonify({"error": "User already exists"}), 409
 
         password_errors = validate_password(password)
 

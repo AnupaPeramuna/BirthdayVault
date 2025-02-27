@@ -12,3 +12,4 @@ def not_found(error):
 def unhandled_exception(error):
     logging.error(error)
     return jsonify({"error": "Unhandled Exception"}), 500
+
