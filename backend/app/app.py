@@ -38,7 +38,7 @@ def create_app(config_class=Config):
     @jwt.user_lookup_loader
     def user_loader_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
-        return User.get_user_by_username(identity)
+        return User.get_user_by_email(identity)
     
     #additional claims
     @jwt.additional_claims_loader
@@ -48,16 +48,16 @@ def create_app(config_class=Config):
     #jwt error handlers
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_data):
-        return jsonify({"message": "Token is expired", "error": "token_expired"}), 401
+        return jsonify({"error": "token_expired"}), 401
 
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return jsonify({"message": "verificaiton failed", "error": "invaldi_token"}), 401
+        return jsonify({"error": "invalid token"}), 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        return jsonify({"message": "No valid token", "error": "authorizaiton_required"}), 401 
+        return jsonify({ "error": "authorization_required"}), 401 
 
 
     @jwt.token_in_blocklist_loader

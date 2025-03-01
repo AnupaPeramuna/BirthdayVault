@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from .models import User, TokenBlockList
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt, jwt_required
 import logging
-from .validate import validate_password
+from .validate import validate_user_input
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -12,23 +12,20 @@ def register_users():
     try:
         data = request.get_json()
 
+        email = data.get('email')
         username = data.get('username')
         password = data.get('password')
 
-        if not username:
-            return jsonify({"error": "Please enter a username"}), 400
-        
-        user = User.get_user_by_username(username=username)
+        errors = validate_user_input(email, username, password)
+        if errors:
+            return jsonify({"error": errors}), 400
 
+
+        user = User.get_user_by_email(email=email)
         if user is not None:
             return jsonify({"error": "User already exists"}), 409
-
-        password_errors = validate_password(password)
-
-        if password_errors:
-            return jsonify({"error": password_errors}), 400
         
-        new_user = User(username=username)
+        new_user = User(email = email, username=username)
         new_user.set_password(password=password)
         new_user.save()
 
@@ -39,20 +36,20 @@ def register_users():
         raise 
     
 
-    
 @auth_bp.post('/login')
 def login_user():
 
     try: 
         data = request.get_json()
 
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
-        user = User.get_user_by_username(username)
+
+        user = User.get_user_by_email(email=email)
 
         if user and (user.check_password(password)):
-            access_token = create_access_token(user.username)
-            refresh_token = create_refresh_token(user.username)
+            access_token = create_access_token(user.email)
+            refresh_token = create_refresh_token(user.email)
 
             return jsonify(
                 {
@@ -64,7 +61,7 @@ def login_user():
                 }
             ), 200
         
-        return jsonify({"error": "Invalid username or password"}),400
+        return jsonify({"error": "Invalid email or password"}),400
     
     except Exception as e:
         logging.error(f"Error logging in user: {e}")

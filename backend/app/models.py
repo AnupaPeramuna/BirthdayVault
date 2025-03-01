@@ -8,6 +8,8 @@ import logging
 
 class User(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    email: so.Mapped[str] = so.mapped_column(sa.String(256), index=True,
+                                                unique=True, nullable=False)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
                                                 unique=True, nullable=False)
     password_hash: so.Mapped[str] = so.mapped_column(sa.String(256), nullable=False)
@@ -35,12 +37,13 @@ class User(db.Model):
 
 
     @classmethod
-    def get_user_by_username(cls, username):
+    def get_user_by_email(cls, email):
         try:
-            return cls.query.filter_by(username = username).first()
+            return cls.query.filter_by(email = email).first()
         except Exception as e:
-            logging.error(f"Error getting user by username: {e}")
+            logging.error(f"Error getting user by email: {e}")
             raise
+
 
     def save(self):
         try:
