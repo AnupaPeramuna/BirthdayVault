@@ -1,14 +1,8 @@
 import pytest
-import json
-import os
-import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from app.extensions import db
 from app.app import create_app
-from app.models import User
-from test_config import TestConfig
+from app.users.models import User
+from tests.test_config import TestConfig
 
 @pytest.fixture
 def client():

@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request
-from .models import User, TokenBlockList
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt, jwt_required
 import logging
-from .validate import validate_user_input
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt, jwt_required
+from app.auth.models import TokenBlockList
+from app.users.models import User
+from app.auth.utils import validate_user_input
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 

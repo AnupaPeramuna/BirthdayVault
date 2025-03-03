@@ -1,15 +1,11 @@
 from flask import Flask, jsonify
-from config import Config
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
-from .models import User, TokenBlockList
-from .extensions import db
+from config import Config
+from app.extensions import db, jwt
+from app.users.models import User
+from app.auth.models import TokenBlockList
 
 import logging
-
-
-jwt = JWTManager()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -25,8 +21,8 @@ def create_app(config_class=Config):
 
     migrate = Migrate(app, db) 
 
-    from .auth import auth_bp
-    from .errors import error_bp
+    from app.auth.routes import auth_bp
+    from app.utils.errors import error_bp
 
     #register blueprints
     app.register_blueprint(error_bp)

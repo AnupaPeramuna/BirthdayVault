@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify
 import logging
+from flask import Blueprint, jsonify
 
 error_bp = Blueprint('errors', __name__, url_prefix='/errors')
 

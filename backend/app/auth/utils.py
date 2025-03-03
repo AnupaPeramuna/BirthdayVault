@@ -23,9 +23,10 @@ def validate_user_input(email, username, password):
 
     if not email:
         errors.append("Please enter your email address")
+
     if not username:
         errors.append( "Please enter a username")
-    
+        
     if not password:
         errors.append("Please enter a password")
         return errors
