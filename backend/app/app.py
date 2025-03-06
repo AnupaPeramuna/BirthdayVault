@@ -1,4 +1,6 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
+
 from flask_migrate import Migrate
 from config import Config
 from app.extensions import db, jwt
@@ -7,10 +9,14 @@ from app.auth.models import TokenBlockList
 
 import logging
 
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     logging.basicConfig(level=logging.ERROR)
+
+    CORS(app)
+
 
 
 
