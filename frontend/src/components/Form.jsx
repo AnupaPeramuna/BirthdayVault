@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import "../styles/Form.css";
 
 function Form({ route, method }) {
   const [username, setUsername] = useState("");
@@ -23,10 +24,10 @@ function Form({ route, method }) {
       // Send request to route
       const res = await api.post(route, payload);
       if (method === "login") {
-        localStorage.setItem(ACCESS_TOKEN, res.data.access);
-        localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-
-        // navigate(""); page after login
+        console.log("we logging in");
+        localStorage.setItem(ACCESS_TOKEN, res.data.token.access);
+        localStorage.setItem(REFRESH_TOKEN, res.data.token.refresh);
+        navigate("/home");
       } else {
         navigate("/login");
       }
@@ -38,6 +39,7 @@ function Form({ route, method }) {
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h1>{method}</h1>
+
       <input
         className="form-email"
         type="text"
@@ -55,6 +57,7 @@ function Form({ route, method }) {
           placeholder="Username"
         />
       )}
+
       <input
         className="form-input"
         type="password"
@@ -62,6 +65,7 @@ function Form({ route, method }) {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
+
       <button className="form-button" type="submit">
         {method}
       </button>
