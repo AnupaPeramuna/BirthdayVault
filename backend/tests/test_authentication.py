@@ -204,7 +204,7 @@ def test_refresh_access_token(client):
         refresh_token = login_info['token']['refresh']
 
         # Refresh token endpoint
-        refresh_response = client.get('/auth/refresh', headers={'Authorization': f'Bearer {refresh_token}'})
+        refresh_response = client.post('/auth/refresh', headers={'Authorization': f'Bearer {refresh_token}'})
 
         assert refresh_response.status_code == 200
         refresh_info = refresh_response.json
@@ -230,7 +230,7 @@ def test_logout_user(client):
         access_token = login_info['token']['access']
 
         # Logout
-        logout_response = client.get('/auth/logout', headers={'Authorization': f'Bearer {access_token}'})
+        logout_response = client.post('/auth/logout', headers={'Authorization': f'Bearer {access_token}'})
 
         assert logout_response.status_code == 200
 

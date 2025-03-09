@@ -69,7 +69,7 @@ def login_user():
         raise
 
 
-@auth_bp.get('/refresh')
+@auth_bp.post('/refresh')
 @jwt_required(refresh=True)
 def refresh_token():
 
@@ -82,7 +82,7 @@ def refresh_token():
         logging.error(f"Error refreshing user access token: {e}")
         raise
 
-@auth_bp.get('/logout')
+@auth_bp.post('/logout')
 @jwt_required(verify_type=False)
 def logout_user():
     try:
