@@ -15,10 +15,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     logging.basicConfig(level=logging.ERROR)
 
-    CORS(app)
-
-
-
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
     #initialize 
     db.init_app(app) 
