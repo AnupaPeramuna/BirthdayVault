@@ -1,6 +1,9 @@
 import logging
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, get_jwt, jwt_required
+from flask_jwt_extended import (create_access_token, 
+                                create_refresh_token,get_jwt_identity,
+                                get_jwt, jwt_required, set_refresh_cookies,
+                                unset_refresh_cookies)
 from app.auth.models import TokenBlockList
 from app.users.models import User
 from app.auth.utils import validate_user_input
@@ -9,7 +12,6 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.post("/register")
 def register_users():
-
     try:
         data = request.get_json()
 
@@ -39,7 +41,6 @@ def register_users():
 
 @auth_bp.post('/login')
 def login_user():
-
     try: 
         data = request.get_json()
 
@@ -52,17 +53,12 @@ def login_user():
             access_token = create_access_token(user.email)
             refresh_token = create_refresh_token(user.email)
 
-            return jsonify(
-                {
-                    "message": "Logged In",
-                    "token": {
-                        "access": access_token,
-                        "refresh": refresh_token
-                    }
-                }
-            ), 200
+            login_response = jsonify({"access_token": access_token})
+            set_refresh_cookies(login_response, refresh_token)
+
+            return login_response, 200
         
-        return jsonify({"error": "Invalid email or password"}),400
+        return jsonify({"error": "Invalid email or password"}),401
     
     except Exception as e:
         logging.error(f"Error logging in user: {e}")
@@ -72,11 +68,10 @@ def login_user():
 @auth_bp.post('/refresh')
 @jwt_required(refresh=True)
 def refresh_token():
-
     try:
         identity = get_jwt_identity()
         new_access_token = create_access_token(identity=identity)
-        return jsonify({"access_token": new_access_token })
+        return jsonify({"access_token": new_access_token }), 200
     
     except Exception as e:
         logging.error(f"Error refreshing user access token: {e}")
@@ -87,14 +82,15 @@ def refresh_token():
 def logout_user():
     try:
         jwt = get_jwt()
-
         jti = jwt['jti']
-        token_type = jwt['type']
 
         blocked_token = TokenBlockList(jti=jti)
         blocked_token.save()
 
-        return jsonify({"message": f"{token_type} token revoked successfully"}), 200
+        response = jsonify({"message": "Successfully Logged out"})
+        unset_refresh_cookies(response)
+
+        return response, 200
   
     except Exception as e:
         logging.error(f"Error logging out user: {e}")
